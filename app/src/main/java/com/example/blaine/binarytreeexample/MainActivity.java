@@ -18,12 +18,16 @@ public class MainActivity extends AppCompatActivity {
         Pre Order - Visit yourself, visit left, visit right   ->  5, 3, 3, 8, 6  <- Shows halves
         Post Order - Visit left, visit right, visit yourself  ->  3, 3, 6, 8, 5  <- Shows leaves first
 
+        Depth First - Goes down individual trees like the orders do (vertical)
+        Breadth First - Goes down by level (horizontal)
+
         ***Traveling Salesman Problem***
         What is the most efficient route to visit your n cities in a day
+
+        RECURSION is a programmatic entity that is defined in terms of itself
+
+        4/23 good voice in video at 53min
      */
-
-    private BinaryTree myTree = new BinaryTree();
-
 
 
     @Override
@@ -31,24 +35,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        BinaryTree2 bt = new BinaryTree2(5);
+        bt.add(3);
+        bt.add(3);
+        bt.add(8);
+        bt.add(6);
 
-        char first = 'I';
-        char second = 'z';
-        char third = 'z';
-        char fourth = 'y';
-        String person = "Izzy";
-
-        System.out.println(person);
-
-
-
-
-
-
-    }
-
-    public void tryThis()
-    {
-        String person = "Delaney";
+        System.out.println(bt.visitInOrder());
     }
 }
