@@ -1,7 +1,11 @@
 package com.example.blaine.binarytreeexample;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,17 +34,100 @@ public class MainActivity extends AppCompatActivity {
      */
 
 
+    private TextView payloadText;
+    private Button rightButton, leftButton;
+    public static BinaryTree2 currTree = new BinaryTree2(5);
+    public static BinaryTree2 rootTree = MainActivity.currTree;
+    public static String state = null;
+
+    // to keep track of intents  -> probably can use the underlying stacks somehow but this works
+    public static TreeStack currTrees = new TreeStack();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BinaryTree2 bt = new BinaryTree2(5);
-        bt.add(3);
-        bt.add(3);
-        bt.add(8);
-        bt.add(6);
+        this.payloadText = (TextView) findViewById(R.id.payloadTV);
+        this.rightButton = (Button) findViewById(R.id.rightBTN);
+        this.leftButton = (Button) findViewById(R.id.leftBTN);
 
-        System.out.println(bt.visitInOrder());
+        this.addTrees();
+
+        // updates the new activity on the stack after each activity change
+        this.payloadText.setText(Integer.toString(this.currTree.getPayload()));
+        this.setButtonVisibility();
+
+
+        System.out.println(this.currTree.visitInOrder());
+    }
+
+    private void addTrees()
+    {
+        if(MainActivity.state == null)
+        {
+            this.currTree.add(3);
+            this.currTree.add(3);
+            this.currTree.add(8);
+            this.currTree.add(6);
+            MainActivity.state = "Filled";
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.out.println("****** ON Destroy!!!!!!");
+
+        // this is a band-aid fix
+        // I'm pretty sure this could be fixed by using the stacks the same way we used sudo recursion with the trees
+        if(this.currTrees.peek() != null) // prevents app from crashing when going beyond the root of the tree
+        {
+            this.currTree = this.currTrees.pop();
+        }
+    }
+
+    // Changes View as if moving to the Right Tree
+    public void onRightClick(View v)
+    {
+        this.currTrees.push(this.currTree);
+        this.currTree = this.currTree.getRight();
+
+        Intent i = new Intent(this, MainActivity.class);
+        this.startActivity(i);
+    }
+
+    // Changes View as if moving to the Left Tree
+    public void onLeftClick(View v)
+    {
+        this.currTrees.push(this.currTree);
+        this.currTree = this.currTree.getLeft();
+
+        Intent i = new Intent(this, MainActivity.class);
+        this.startActivity(i);
+    }
+
+    // Makes buttons invisible when there is not a left or right tree
+    private void setButtonVisibility()
+    {
+        // if left tree is null, then do not show button
+        if(this.currTree.getLeft() == null)
+        {
+            this.leftButton.setVisibility(View.INVISIBLE);
+        }
+        else
+        {
+            this.leftButton.setVisibility(View.VISIBLE);
+        }
+
+        // if right tree is null, then do not show button
+        if(this.currTree.getRight() == null)
+        {
+            this.rightButton.setVisibility(View.INVISIBLE);
+        }
+        else
+        {
+            this.rightButton.setVisibility(View.VISIBLE);
+        }
     }
 }

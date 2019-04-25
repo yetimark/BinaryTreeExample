@@ -86,4 +86,16 @@ public class BinaryTree2
         answer += this.payload + ", ";
         return answer;
     }
+
+    public int getPayload() {
+        return payload;
+    }
+
+    public BinaryTree2 getLeft() {
+        return left;
+    }
+
+    public BinaryTree2 getRight() {
+        return right;
+    }
 }
