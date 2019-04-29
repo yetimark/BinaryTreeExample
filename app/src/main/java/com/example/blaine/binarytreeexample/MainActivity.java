@@ -9,7 +9,8 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    /*
+    /*  CLASS NOTES
+
         ***Binary Trees***
         A starting node or "root"
         If values added are less than or equal the value, it is added to the left
@@ -36,15 +37,11 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView payloadText;
     private Button rightButton, leftButton;
-    public static BinaryTree2 currTree = new BinaryTree2(5);
-    public static BinaryTree2 rootTree = MainActivity.currTree;
-    public static String state = null;
-
-    // to keep track of intents  -> probably can use the underlying stacks somehow but this works
-    public static TreeStack currTrees = new TreeStack();
+    public BinaryTree2 myTree;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -52,82 +49,56 @@ public class MainActivity extends AppCompatActivity {
         this.rightButton = (Button) findViewById(R.id.rightBTN);
         this.leftButton = (Button) findViewById(R.id.leftBTN);
 
-        this.addTrees();
 
-        // updates the new activity on the stack after each activity change
-        this.payloadText.setText(Integer.toString(this.currTree.getPayload()));
-        this.setButtonVisibility();
-
-
-        System.out.println(this.currTree.visitInOrder());
-    }
-
-    private void addTrees()
-    {
-        if(MainActivity.state == null)
+        if(this.getIntent().hasExtra("myTree"))
         {
-            this.currTree.add(3);
-            this.currTree.add(3);
-            this.currTree.add(8);
-            this.currTree.add(6);
-            MainActivity.state = "Filled";
+            this.myTree = (BinaryTree2)this.getIntent().getSerializableExtra("myTree");
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        System.out.println("****** ON Destroy!!!!!!");
-
-        // this is a band-aid fix
-        // I'm pretty sure this could be fixed by using the stacks the same way we used sudo recursion with the trees
-        if(this.currTrees.peek() != null) // prevents app from crashing when going beyond the root of the tree
+        else
         {
-            this.currTree = this.currTrees.pop();
+            // only when the first MainActivity launches
+            this.myTree = new BinaryTree2(5);
+            this.myTree.add(3);
+            this.myTree.add(3);
+            this.myTree.add(8);
+            this.myTree.add(6);
         }
+
+
+        this.payloadText.setText(Integer.toString(this.myTree.getPayload()));
+        this.hideButtonsIfNecessary();
+        System.out.println(this.myTree.visitInOrder());
     }
 
     // Changes View as if moving to the Right Tree
     public void onRightClick(View v)
     {
-        this.currTrees.push(this.currTree);
-        this.currTree = this.currTree.getRight();
-
         Intent i = new Intent(this, MainActivity.class);
+        i.putExtra("myTree", this.myTree.getRight());
         this.startActivity(i);
     }
 
     // Changes View as if moving to the Left Tree
     public void onLeftClick(View v)
     {
-        this.currTrees.push(this.currTree);
-        this.currTree = this.currTree.getLeft();
-
         Intent i = new Intent(this, MainActivity.class);
+        i.putExtra("myTree", this.myTree.getLeft());
         this.startActivity(i);
     }
 
     // Makes buttons invisible when there is not a left or right tree
-    private void setButtonVisibility()
+    private void hideButtonsIfNecessary()
     {
         // if left tree is null, then do not show button
-        if(this.currTree.getLeft() == null)
+        if(this.myTree.getLeft() == null)
         {
             this.leftButton.setVisibility(View.INVISIBLE);
         }
-        else
-        {
-            this.leftButton.setVisibility(View.VISIBLE);
-        }
 
         // if right tree is null, then do not show button
-        if(this.currTree.getRight() == null)
+        if(this.myTree.getRight() == null)
         {
             this.rightButton.setVisibility(View.INVISIBLE);
-        }
-        else
-        {
-            this.rightButton.setVisibility(View.VISIBLE);
         }
     }
 }
