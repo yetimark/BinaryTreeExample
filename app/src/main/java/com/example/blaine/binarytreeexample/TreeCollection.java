@@ -11,20 +11,35 @@ public class TreeCollection
         this.theMappings = new LinkedList<TreeValue>();
     }
 
-    public void addTree(String secretCode, BinaryTree2 tree)
+    public void addTree(int secretCode, BinaryTree2 tree)
     {
         this.theMappings.add(new TreeValue(secretCode, tree));
     }
 
-    public BinaryTree2 getTreeWithSuperSecretCode(String secretCode)
+    public void removeTree()
+    {
+        this.theMappings.removeLast();
+    }
+
+    public BinaryTree2 getTreeWithSuperSecretCode(int secretCode)
     {
         for(TreeValue tv : this.theMappings)
         {
-            if(tv.secretCode.equals(secretCode))
+            if(tv.getSecretCode() == secretCode)
             {
-                return tv.tree;
+                return tv.getTree();
             }
         }
         return null;
+    }
+
+    public void display()
+    {
+        String answer = "";
+        for(TreeValue tv : this.theMappings)
+        {
+            answer += tv.getTree().getPayload() + " -> ";
+        }
+        System.out.println(answer);
     }
 }

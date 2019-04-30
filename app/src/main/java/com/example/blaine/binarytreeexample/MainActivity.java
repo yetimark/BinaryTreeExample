@@ -1,6 +1,7 @@
 package com.example.blaine.binarytreeexample;
 
 import android.content.Intent;
+import android.icu.text.SymbolTable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView payloadText;
     private Button rightButton, leftButton;
-    public BinaryTree2 myTree;
+    private BinaryTree2 myTree;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -49,10 +50,10 @@ public class MainActivity extends AppCompatActivity {
         this.rightButton = (Button) findViewById(R.id.rightBTN);
         this.leftButton = (Button) findViewById(R.id.leftBTN);
 
-
-        if(this.getIntent().hasExtra("myTree"))
+        // Use the vault in core to store secret code and all right and left trees
+        if(Core.currentCode != 0)
         {
-            this.myTree = (BinaryTree2)this.getIntent().getSerializableExtra("myTree");
+            this.myTree = Core.theVault.getTreeWithSuperSecretCode(Core.currentCode);
         }
         else
         {
@@ -64,17 +65,17 @@ public class MainActivity extends AppCompatActivity {
             this.myTree.add(6);
         }
 
-
         this.payloadText.setText(Integer.toString(this.myTree.getPayload()));
         this.hideButtonsIfNecessary();
-        System.out.println(this.myTree.visitInOrder());
     }
 
     // Changes View as if moving to the Right Tree
     public void onRightClick(View v)
     {
         Intent i = new Intent(this, MainActivity.class);
-        i.putExtra("myTree", this.myTree.getRight());
+
+        // increases current code before not after -> aligns code with current tree
+        Core.theVault.addTree(++Core.currentCode, this.myTree.getRight());
         this.startActivity(i);
     }
 
@@ -82,7 +83,9 @@ public class MainActivity extends AppCompatActivity {
     public void onLeftClick(View v)
     {
         Intent i = new Intent(this, MainActivity.class);
-        i.putExtra("myTree", this.myTree.getLeft());
+
+        // increases current code before not after -> aligns code with current tree
+        Core.theVault.addTree(++Core.currentCode, this.myTree.getLeft());
         this.startActivity(i);
     }
 
